@@ -31,9 +31,8 @@ def summarize(exp_id:int):
             f"Decision: {test.result}\n"
             f"Conclusion: {conclusion}"
         )
-        session.close()
         return{"summary":summary}
-    else:
+    elif test_type=="chi-squared":
         chi2=session.query(Chi2Details).filter(Chi2Details.exp_id==exp_id).first()
         metrics=session.query(Metric).filter(Metric.exp_id==exp_id).all()
 
@@ -49,13 +48,13 @@ def summarize(exp_id:int):
         else:
             conclusion="No significance difference between the variants."
 
-        summary=(f"Test Type: Chi2-Test\n"
+        summary=(f"Test Type: {test_type}\n"
             f"Test Statistic: {chi2.chi2_stat}\n"
             f"Degrees of Freedom: {chi2.dof}\n"
             f"P-value: {test.p_value}\n"
             f"Decision: {test.result}\n"
-            f"Conclusion: {conclusion}"
+            f"Conclusion: {conclusion}\n"
+            f"exp_id : {exp_id}"
 
         )
-        session.close()
         return {"summary":summary}
