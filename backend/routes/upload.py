@@ -43,8 +43,20 @@ async def uploadfile(file:UploadFile=File(...),variant:str = Form(...),
     s3 = boto3.client("s3")
     obj = s3.get_object(Bucket="ab-platform-files", Key=raw_s3_key)
     df = pd.read_csv(obj["Body"])
+
+                         
+    if  variant not in df.columns:
+        return{"message":"Incorrect variant column name."}
+    if  metric not in df.columns:
+        return{"message":"Incorrect metric column name."}
     df.replace("  ", " -", inplace=True)
     df.dropna(inplace=True)
+    if len(df[metric].unique())>2 and test_type=="chi-squared":
+        return{"message":"Choose correct test type (Suggestion:T-Test)"}
+    if len(df[metric].unique())==2 and test_type=="t-test":
+        return {"message": "Choose correct test type (Suggestion:Chi2-Test)"}
+    if len(df[variant].unique())!=2:
+        return {"message":"This model currently works with files containing only 2 variants."}
 
     buffer = BytesIO()
     df.to_csv(buffer, index=False)
