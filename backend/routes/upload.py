@@ -29,7 +29,7 @@ async def uploadfile(file:UploadFile=File(...),variant:str = Form(...),
     # ------------Storing the File-----------------------
     from datetime import datetime
 
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")  # e.g., '20250617_213504'
+    timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
     base_name = file.filename.rsplit(".", 1)[0]
     ext = file.filename.rsplit(".", 1)[1]
 
@@ -43,8 +43,7 @@ async def uploadfile(file:UploadFile=File(...),variant:str = Form(...),
     s3 = boto3.client("s3")
     obj = s3.get_object(Bucket="ab-platform-files", Key=raw_s3_key)
     df = pd.read_csv(obj["Body"])
-
-                         
+    print(df.columns)
     if  variant not in df.columns:
         return{"message":"Incorrect variant column name."}
     if  metric not in df.columns:
@@ -57,6 +56,7 @@ async def uploadfile(file:UploadFile=File(...),variant:str = Form(...),
         return {"message": "Choose correct test type (Suggestion:Chi2-Test)"}
     if len(df[variant].unique())!=2:
         return {"message":"This model currently works with files containing only 2 variants."}
+
 
     buffer = BytesIO()
     df.to_csv(buffer, index=False)
@@ -99,7 +99,7 @@ async def uploadfile(file:UploadFile=File(...),variant:str = Form(...),
     session.add_all(variants)
     session.commit()
     # -----------------------Testing----------------------------
-    if test_type == "t-Test":
+    if test_type == "t-test":
         l = t_test(variant, metric, file_location, exp.exp_id)
         metrics = [Metric(metric_name=metric,
                           metric_value=l["m1"],
@@ -169,5 +169,6 @@ async def uploadfile(file:UploadFile=File(...),variant:str = Form(...),
         "file_id": uploaded.file_id,
         "file_name": uploaded.file_name,
         "file_path": uploaded.cleaned_file_path,
-        "exp_id":exp.exp_id
+        "exp_id":exp.exp_id,
+        "test_type":test_type
     }
