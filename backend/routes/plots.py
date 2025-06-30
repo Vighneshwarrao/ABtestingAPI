@@ -115,6 +115,7 @@ def get_plots(exp_id : int):
         plt.legend()
         plt.grid(True)
         pplot = plot_to_base64()
+        session.close()
 
         return {'plot1': bar_plot,
                 'plot2': kdeplot,
@@ -178,8 +179,10 @@ def get_plots(exp_id : int):
         plt.legend()
         plt.tight_layout()
         chi2_plot = plot_to_base64()
+        session.close()
         return {"plot1": obv_count,
                 "plot2": mosiac_plot,
                 "plot3": ex_obv,
                 "plot4": chi2_plot}
+
     return {"Error":"Choose valid EXP_ID"}
