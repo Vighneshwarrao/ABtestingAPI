@@ -31,6 +31,7 @@ def summarize(exp_id:int):
             f"Decision: {test.result}\n"
             f"Conclusion: {conclusion}"
         )
+        session.close()
         return{"summary":summary}
     else:
         chi2=session.query(Chi2Details).filter(Chi2Details.exp_id==exp_id).first()
@@ -56,5 +57,5 @@ def summarize(exp_id:int):
             f"Conclusion: {conclusion}"
 
         )
-
+        session.close()
         return {"summary":summary}
