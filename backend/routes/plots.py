@@ -39,7 +39,7 @@ def get_plots(exp_id : int):
     df = read_csv_from_s3(file_path)
 
     test=session.query(StatisticalTest).filter(StatisticalTest.exp_id==exp_id).first()
-    if test.test_type=='t-Test':
+    if test.test_type=='t-test':
         ttest=session.query(TTestDetails).filter(TTestDetails.exp_id==exp_id).first()
         var1=ttest.var1
         var2=ttest.var2
