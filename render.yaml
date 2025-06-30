@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: ab-platform
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port 10000
+    envVars:
+      - key: AWS_ACCESS_KEY_ID
+      - key: AWS_SECRET_ACCESS_KEY
+      - key: DATABASE_URL
+      - key: AWS_REGION
