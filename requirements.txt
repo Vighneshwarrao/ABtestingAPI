@@ -1,6 +1,7 @@
 # Core Web Framework
 fastapi==0.110.1
 uvicorn[standard]==0.29.0
+gunicorn==22.0.0
 
 # Database and ORM
 sqlalchemy==2.0.30
