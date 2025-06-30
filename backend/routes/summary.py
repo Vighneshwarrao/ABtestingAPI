@@ -11,7 +11,7 @@ def summarize(exp_id:int):
     varinat_A=variants[0].variant_name
     varinat_B = variants[1].variant_name
     test_type=test.test_type
-    if test_type=='t-Test':
+    if test_type=='t-test':
         ttest=session.query(TTestDetails).filter(TTestDetails.exp_id==exp_id).first()
         if test.p_value<0.05:
             if ttest.ci_l < 0 and ttest.ci_u <0:
