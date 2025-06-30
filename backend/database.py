@@ -3,12 +3,12 @@ from sqlalchemy.orm import declarative_base,sessionmaker,relationship
 from sqlalchemy.sql import func
 
 
-DB_USER = "admin"
-DB_PASS = "Dhoni07!"
-DB_HOST = "abtesting-db.ctek0o062v8b.ap-south-1.rds.amazonaws.com"
-DB_PORT = "3306"
-DB_NAME = "abtesting"
-url=f"mysql+mysqlconnector://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+url = os.getenv("DATABASE_URL")
 
 engine=create_engine(url, pool_pre_ping=True)
 
