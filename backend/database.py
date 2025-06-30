@@ -10,7 +10,7 @@ DB_PORT = "3306"
 DB_NAME = "abtesting"
 url=f"mysql+mysqlconnector://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-engine=create_engine(url)
+engine=create_engine(url, pool_pre_ping=True)
 
 Base=declarative_base()
 class Experiment(Base):
