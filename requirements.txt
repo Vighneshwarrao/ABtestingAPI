@@ -2,6 +2,9 @@ fastapi==0.110.1
 uvicorn[standard]==0.29.0
 gunicorn==20.1.0
 
+setuptools>=65.5.1
+wheel>=0.38.4
+
 sqlalchemy==2.0.30
 mysql-connector-python==8.0.33
 
