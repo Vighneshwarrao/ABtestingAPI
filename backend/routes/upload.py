@@ -1,8 +1,7 @@
 from backend.database import SessionLocal,Uploadedfile,Experiment,Variant,Metric,StatisticalTest,TTestDetails,Chi2Details
 from backend.abtests import get_variants, t_test,chi2_test
 from fastapi import APIRouter,File,UploadFile,Form
-import shutil
-import os
+from fastapi import HTTPException
 import pandas as pd
 
 from io import BytesIO
@@ -26,6 +25,9 @@ def upload_file_to_s3(file_obj, bucket_name, key):
 @router.post("/upload/")
 async def uploadfile(file:UploadFile=File(...),variant:str = Form(...),
                      metric:str=Form(...),test_type:str=Form()):
+    variant = variant.strip()
+    metric = metric.strip()
+
     # ------------Storing the File-----------------------
     from datetime import datetime
 
@@ -45,17 +47,18 @@ async def uploadfile(file:UploadFile=File(...),variant:str = Form(...),
     df = pd.read_csv(obj["Body"])
     print(df.columns)
     if  variant not in df.columns:
-        return{"message":"Incorrect variant column name."}
+        raise HTTPException(status_code=400, detail="Incorrect variant column name.")
     if  metric not in df.columns:
-        return{"message":"Incorrect metric column name."}
+        raise HTTPException(status_code=400, detail="Incorrect metric column name.")
     df.replace("  ", " -", inplace=True)
     df.dropna(inplace=True)
     if len(df[metric].unique())>2 and test_type=="chi-squared":
-        return{"message":"Choose correct test type (Suggestion:T-Test)"}
+        raise HTTPException(status_code=400, detail="Incorrect Test type for the given File.")
     if len(df[metric].unique())==2 and test_type=="t-test":
-        return {"message": "Choose correct test type (Suggestion:Chi2-Test)"}
+        raise HTTPException(status_code=400, detail="Incorrect Test type for the given File.")
     if len(df[variant].unique())!=2:
-        return {"message":"This model currently works with files containing only 2 variants."}
+        raise HTTPException(status_code=422, detail="This model currently works with 2 variants only.")
+
 
 
     buffer = BytesIO()
