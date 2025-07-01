@@ -5,17 +5,23 @@ from fastapi import HTTPException
 import pandas as pd
 
 from io import BytesIO
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+url = os.getenv("BUCKET_URL")
 router=APIRouter()
 #Creating the Folders to store files
 
 import boto3
 from botocore.exceptions import NoCredentialsError
 
-def upload_file_to_s3(file_obj, bucket_name, key):
+def upload_file_to_s3(file_obj,key):
     s3 = boto3.client("s3")
     try:
-        s3.upload_fileobj(file_obj, bucket_name, key, ExtraArgs={"ContentType": "text/csv"})
-        return f"https://{bucket_name}.s3.ap-south-1.amazonaws.com/{key}"
+        s3.upload_fileobj(file_obj, "ab-platform-files", key, ExtraArgs={"ContentType": "text/csv"})
+        return f"{url}/{key}"
     except NoCredentialsError:
         return "Credentials not available"
 
@@ -40,7 +46,7 @@ async def uploadfile(file:UploadFile=File(...),variant:str = Form(...),
     raw_file_buffer = BytesIO(raw_bytes)
     raw_file_buffer.seek(0)
     raw_s3_key = f"raw_files/{new_filename}"
-    upload_file_to_s3(raw_file_buffer, "ab-platform-files", raw_s3_key)
+    upload_file_to_s3(raw_file_buffer, raw_s3_key)
 
     s3 = boto3.client("s3")
     obj = s3.get_object(Bucket="ab-platform-files", Key=raw_s3_key)
@@ -65,7 +71,7 @@ async def uploadfile(file:UploadFile=File(...),variant:str = Form(...),
     df.to_csv(buffer, index=False)
     buffer.seek(0)
     s3_key = f"cleaned_files/{new_filename}"
-    file_url = upload_file_to_s3(buffer, "ab-platform-files", s3_key)
+    file_url = upload_file_to_s3(buffer, s3_key)
     file_location = s3_key
 
     # --------Updating experiments table---------------
