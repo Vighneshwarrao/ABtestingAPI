@@ -10,6 +10,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.head('/')
+async def head_root():
+    return {}
 
 app.include_router(upload.router)
 app.include_router(plots.router)
