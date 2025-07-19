@@ -10,6 +10,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.get('/')
+def greet():
+    return "Hello"
 app.head('/')
 async def head_root():
     return {}
